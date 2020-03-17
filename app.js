@@ -5,8 +5,11 @@ var bodyParser = require('body-parser');
 
 // Internal modules
 var config = require('./config');
-var userController = require('./controllers/UserController');
 var authController = require('./controllers/AuthController');
+var userController = require('./controllers/UserController');
+var foodController = require('./controllers/FoodController');
+var ingredientController = require('./controllers/IngredientController');
+var orderController = require('./controllers/OrderController');
 
 // Database setup
 
@@ -31,8 +34,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
-app.use('/', userController);
 app.use('/auth',authController)
+app.use('/', userController);
+app.use('/', foodController);
+app.use('/', ingredientController);
+app.use('/', orderController);
 
 
 // Server deployment 
