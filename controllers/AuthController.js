@@ -29,7 +29,6 @@ router.post('/login', function(req, res) {
       
       // check if the password is valid
       var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-      console.log(req.body.password,user.password)
       if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
   
       // if user is found and password is valid
@@ -42,6 +41,7 @@ router.post('/login', function(req, res) {
       res.status(200).send({ 
         status: true, 
         user_id: user._id,
+        role: user.role,
         token: token,
         expiresIn:config.expiresIn
       });
