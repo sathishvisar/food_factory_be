@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
- var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcryptjs');
 
 const route = 'user'; 	// Route: 'recipe' routes to /recipe
 const modelId = 'User';  	// Same name as file, no extension: Recipe'
 
-var Schema = new mongoose.Schema({
+var UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true
@@ -32,8 +32,30 @@ var Schema = new mongoose.Schema({
 	}
 });
 
+ 
+UserSchema.pre("save", function(next) {
+	console.log('save');
+    if(!this.isModified("password")) {
+        return next();
+	}
+	this.password = bcrypt.hashSync(this.password, 10);
+    next();
+});
+
+
+UserSchema.pre("update", function(next) {
+	console.log('update 1');
+    if(!this.isModified("password")) {
+        return next();
+	}
+	console.log('update 2');
+	this.password = bcrypt.hashSync(this.password, 10);
+    next();
+});
+
+
 
 module.exports = {
-	model: mongoose.model(modelId, Schema),
+	model: mongoose.model(modelId, UserSchema),
 	route: route
 }

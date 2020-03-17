@@ -6,13 +6,15 @@ var bodyParser = require('body-parser');
 // Internal modules
 var config = require('./config');
 var userController = require('./controllers/UserController');
+var authController = require('./controllers/AuthController');
 
 // Database setup
 
 mongoose.connect(config.DB_PATH, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 });
 
 var db = mongoose.connection;
@@ -30,6 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
 app.use('/', userController);
+app.use('/auth',authController)
 
 
 // Server deployment 

@@ -3,6 +3,7 @@ var modelLocation = '../models/User'
 
 var util = require('util');
 var express = require('express');
+var bcrypt = require('bcryptjs');
 
 /**  Model and route setup **/
 
@@ -17,7 +18,6 @@ var router = express.Router();
 
 // Create User
 router.post(routeIdentifier + '/create', function (req, res, next) {
-    console.log('Got body:', req.body);
 
     // Validation
     if (req.body === undefined || req.body.email === undefined || req.body.password === undefined) {
@@ -72,9 +72,14 @@ router.get(routeIdentifier + '/get/:id', function (req, res, next) {
 // Update User
 router.post(routeIdentifier + '/update/:id', function (req, res, next) {
     var query = {'_id': req.params.id};
+
+    if(req.body.password){
+        delete req.body.password;
+    }
     
-    model.findOneAndUpdate(query, req.body, {upsert: true}, function(err, doc) {
+    model.findOneAndUpdate(query, req.body, {upsert: true}, function(err, user) {
         if (err) return res.send(500, {error: err});
+
         return res.send({
             status: true,
             message: 'User updated!'
@@ -82,8 +87,7 @@ router.post(routeIdentifier + '/update/:id', function (req, res, next) {
     });
 })
 
-
-
+ 
 
 
 module.exports = router;
