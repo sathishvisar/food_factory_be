@@ -7,9 +7,11 @@ var config = require('./config');
 var userController = require('./controllers/UserController');
 
 // Database setup
+
 mongoose.connect(config.DB_PATH, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 });
 
 var db = mongoose.connection;
