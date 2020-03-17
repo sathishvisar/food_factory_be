@@ -25,8 +25,7 @@ var Schema = new mongoose.Schema({
 		type: Date,
 	},
 	uAt: {
-		type: Date,
-		unique: true
+		type: Date
 	},
 	status: {
 		type: Boolean

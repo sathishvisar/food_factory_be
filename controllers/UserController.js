@@ -1,60 +1,89 @@
 var modelLocation = '../models/User'
 
- /****************************************************************
- *				   DO NOT TOUCH BELOW THIS LINE 				 *
- ****************************************************************/
 
- var util = require('util');
- var express = require('express');
+var util = require('util');
+var express = require('express');
 
- /**  Model and route setup **/
+/**  Model and route setup **/
 
- var model = require(modelLocation).model;
- const route = require(modelLocation).route;
- const routeIdentifier = util.format('/%s', route);
+var model = require(modelLocation).model;
+const route = require(modelLocation).route;
+const routeIdentifier = util.format('/%s', route);
 
- /** Router setup **/
+/** Router setup **/
 
- var router = express.Router();
+var router = express.Router();
 
- /** Express routing **/
 
-/*
- * GET /create
- *
- */
+// Create User
+router.post(routeIdentifier + '/create', function (req, res, next) {
+    console.log('Got body:', req.body);
 
- router.get(routeIdentifier+'/create', function(req, res, next) {
-    if (req.query === undefined || req.query.username === undefined || req.query.password === undefined) {
+    // Validation
+    if (req.body === undefined || req.body.email === undefined || req.body.password === undefined) {
         return res.json({
-            status: 'Failure',
-            message: 'Both username and password must be defined in the query string!'
+            status: false,
+            message: 'Both email and password must be defined in the query string!'
         });
     }
 
-    if (req.query.username === "") {
+    if (req.body.email === "") {
         return res.json({
-            status: 'Failure',
-            message: 'Username cannot be empty!'
+            status: false,
+            message: 'Email cannot be empty!'
         });
     }
 
-    if (req.query.password === "") {
+    if (req.body.password === "") {
         return res.json({
-            status: 'Failure',
+            status: false,
             message: 'Password cannot be empty!'
         });
     }
 
- 	model.create(req.query, function (err, entry) {
- 		if (err) return res.send(err);
-
+    model.create(req.body, function (err, entry) {
+        if (err) return res.send(err);
         return res.json({
-            status: 'Success',
+            status: true,
             message: 'User was created!'
         });
- 	});
- });
+    });
+});
+
+// List Users
+router.get(routeIdentifier + '/list', function (req, res, next) {
+    model.find({}, function (err, objects) {
+        if (err) return res.send(err);
+        return res.json(objects);
+    });
+});
 
 
- module.exports = router;
+// Get User by ID
+router.get(routeIdentifier + '/get/:id', function (req, res, next) {
+    model.findOne({
+        '_id': req.params.id,
+    }, function (err, entry) {
+        if (err) return res.send(err);
+        return res.json(entry);
+    });
+})
+
+// Update User
+router.post(routeIdentifier + '/update/:id', function (req, res, next) {
+    var query = {'_id': req.params.id};
+    
+    model.findOneAndUpdate(query, req.body, {upsert: true}, function(err, doc) {
+        if (err) return res.send(500, {error: err});
+        return res.send({
+            status: true,
+            message: 'User updated!'
+        });
+    });
+})
+
+
+
+
+
+module.exports = router;
